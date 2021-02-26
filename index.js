@@ -3,7 +3,7 @@ const sleep = require('sleep-promise')
 const fs = require('fs')
 require('colors')
 
-const hosts = ['127.0.0.1', '8.8.8.8', '193.26.21.71']
+const hosts = ['google.com']
 
 const separator = '-------------------------------------------------------'
 const voidSeparator = '                                                       '
