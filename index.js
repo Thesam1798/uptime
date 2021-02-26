@@ -1,15 +1,25 @@
-const ping = require('ping')
 const sleep = require('sleep-promise')
 const fs = require('fs')
+const https = require('https')
+
 require('colors')
 
-const hosts = ['google.com']
+const url = 'google.com'
 
 const separator = '-------------------------------------------------------'
 const voidSeparator = '                                                       '
 let path
-let start
 let fileContents
+let onError = false
+
+const options = {
+    hostname: url,
+    port: 443,
+    path: '',
+    method: 'GET'
+}
+
+let start = process.hrtime()
 
 function getTime() {
     let date_ob = new Date()
@@ -31,6 +41,20 @@ function getDateTime() {
     return getDay() + " | " + getTime()
 }
 
+function update(localPath, error) {
+    if (onError === false && error === true) {
+        start = process.hrtime()
+        onError = true
+        console.log('Un down time a été déclencher : ' + getDateTime())
+    } else if (onError === true && error === false) {
+        fileContents += '\n' + '[' + getDateTime() + '] ' + process.hrtime(start)[0] + ' seconde'
+        fs.writeFileSync(localPath, fileContents)
+        console.log('[' + getDateTime() + '] Impossible de contacté : ' + url + '\nPendant une période de : ' + process.hrtime(start)[0] + 'seconde')
+        onError = false;
+        start = process.hrtime()
+    }
+}
+
 function testNetwork() {
 
     if (path !== ('./' + getDay() + '.log')) {
@@ -43,19 +67,21 @@ function testNetwork() {
     }
 
     sleep(1000).then(function () {
-        hosts.forEach(function (host) {
-            start = process.hrtime()
-            ping.sys.probe(host, function (isAlive) {
-                console.log(isAlive)
-                if (!isAlive) {
-                    const elapsed = process.hrtime(start)[1] / 1000000
-                    const msg = '[' + getDateTime() + '] ' + host + " | " + elapsed.toFixed(3) + "ms"
-                    console.log(msg)
-                    fileContents = fileContents + '\n' + msg
-                    fs.writeFileSync(path, fileContents)
-                }
-            })
+
+        const req = https.request(options, res => {
+            if (res.statusCode !== 301) {
+                update(path, true)
+            } else {
+                update(path, false)
+            }
         })
+
+        req.on('error', error => {
+            update(path, true)
+        })
+
+        req.end()
+
         testNetwork()
     })
 }
