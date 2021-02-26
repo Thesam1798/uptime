@@ -12,6 +12,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Dependency directories
 node_modules/
+.config/
+.npm/
 
 # yarn v2
 .yarn/cache
@@ -19,6 +21,10 @@ node_modules/
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Lock
+package-lock.json
+yarn.lock
 
 # IntelliJ project files
 .idea
