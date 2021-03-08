@@ -47,8 +47,11 @@ function update(localPath, error) {
         onError = true
         console.log('Un down time a été déclencher : ' + getDateTime())
     } else if (onError === true && error === false) {
-        fileContents += '\n' + '[' + getDateTime() + '] ' + process.hrtime(start)[0] + ' seconde'
-        fs.writeFileSync(localPath, fileContents)
+
+        if (process.hrtime(start)[0] >= 5) {
+            fileContents += '\n' + '[' + getDateTime() + '] ' + process.hrtime(start)[0] + ' seconde'
+            fs.writeFileSync(localPath, fileContents)
+        }
         console.log('[' + getDateTime() + '] Impossible de contacté : ' + url + '\nPendant une période de : ' + process.hrtime(start)[0] + 'seconde')
         onError = false;
         start = process.hrtime()
@@ -76,7 +79,7 @@ function testNetwork() {
             }
         })
 
-        req.on('error', error => {
+        req.on('error', () => {
             update(path, true)
         })
 
