@@ -70,7 +70,7 @@ function testNetwork() {
 
     sleep(1000).then(function () {
         const req = https.request(options, res => {
-            if (res.statusCode !== 301) {
+            if (res.statusCode !== 200) {
                 update(path, true)
             } else {
                 update(path, false)
