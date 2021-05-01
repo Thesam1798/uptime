@@ -4,7 +4,7 @@ const https = require('https')
 
 require('colors')
 
-const url = 'google.com'
+const url = 'liberty-host.com'
 
 const separator = '-------------------------------------------------------'
 const voidSeparator = '                                                       '
@@ -47,7 +47,6 @@ function update(localPath, error) {
         onError = true
         console.log('Un down time a été déclencher : ' + getDateTime())
     } else if (onError === true && error === false) {
-
         if (process.hrtime(start)[0] >= 5) {
             fileContents += '\n' + '[' + getDateTime() + '] ' + process.hrtime(start)[0] + ' seconde'
             fs.writeFileSync(localPath, fileContents)
@@ -70,7 +69,6 @@ function testNetwork() {
     }
 
     sleep(1000).then(function () {
-
         const req = https.request(options, res => {
             if (res.statusCode !== 301) {
                 update(path, true)
